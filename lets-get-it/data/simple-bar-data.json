@@ -1,0 +1,19 @@
+[
+  { "Group" : "서울", "Count" : 9765623},
+  { "Group" : "부산", "Count" : 3441453},
+  { "Group" : "대구", "Count" : 2461769},
+  { "Group" : "인천", "Count" : 2954642},
+  { "Group" : "광주", "Count" : 1459336},
+  { "Group" : "대전", "Count" : 1489936},
+  { "Group" : "울산", "Count" : 1155623},
+  { "Group" : "세종", "Count" : 314126},
+  { "Group" : "경기", "Count" : 1307715},
+  { "Group" : "강원", "Count" : 1543052},
+  { "Group" : "충북", "Count" : 1599252},
+  { "Group" : "충남", "Count" : 2126282},
+  { "Group" : "전북", "Count" : 1836832},
+  { "Group" : "전남", "Count" : 1882970},
+  { "Group" : "경북", "Count" : 2676831},
+  { "Group" : "경남", "Count" : 3373988},
+  { "Group" : "제주", "Count" : 667191}
+]

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<!-- 2018 지역별 주민등록 인구 -->
+<head>
+    <style>
+
+        /* bar chart를 무슨색으로 칠할지. named colors는 여기서 확인 -> http://bl.ocks.org/d3noob/11313583 */
+        .bar {
+            fill: gold;
+        }
+
+        .bar:hover{
+            fill: #185b3d;
+        }
+
+        .axis {
+            font: 15px sans-serif;
+        }
+
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: #000;
+            shape-rendering: crispEdges;
+        }
+
+        /* tooltip 설정 */
+        .d3-tip {
+            line-height: 1;
+            font-weight: bold;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            border-radius: 2px;
+        }
+
+        /* tooltip 아래에 화살표 역할의 뾰족 역삼각형 만들기 */
+        .d3-tip:after {
+            box-sizing: border-box;
+            display: inline;
+            font-size: 10px;
+            width: 100%;
+            line-height: 1;
+            color: rgba(0, 0, 0, 0.8);
+            content: "\25BC";
+            position: absolute;
+            text-align: center;
+        }
+
+        .d3-tip.n:after {
+            margin: -1px 0 0 0;
+            top: 100%;
+            left: 0;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<!-- d3.js 불러오기 (필수)-->
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<!-- d3-tip 불러오기 (옵션. 안쓰려면 안적어도 됨)-->
+<script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+
+<script>
+    // 그림 그릴 캔버스의 크기 설정
+    var margin = {top: 50, right: 50, bottom: 70, left: 160},
+        width = 800 - margin.left - margin.right,
+        height = 400 - margin.top - margin.bottom
+    ;
+
+    // 범위 설정
+    var x = d3.scale.ordinal().rangeRoundBands([0, width], .05);
+
+    var y = d3.scale.linear().range([height, 15]);
+
+    // 축 정의
+    var xAxis = d3.svg.axis()
+        .scale(x)
+        .orient("bottom")
+
+    var yAxis = d3.svg.axis()
+        .scale(y)
+        .orient("left")
+        .ticks(10);
+
+    var tip = d3.tip()
+        .attr('class', 'd3-tip')
+        .offset([-10, 0])
+        .html(function(d) {
+            return "<span style='color:#ff750d'>" + d.Count + "</span><strong> 명</strong> ";
+        })
+
+    // SVG를 추가합시다.
+    var svg = d3.select("body").append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform",
+            "translate(" + margin.left + "," + margin.top + ")");
+
+    svg.call(tip);
+    // data 불러오기. 여기선 json 형태의 data를 불러와서 d3.json 사용. csv를 불러온다면? d3.csv
+    d3.json("data/simple-bar-data.json", function(error, data) {
+
+        data.forEach(function(d) {
+            d.Group = d.Group;
+            d.Count = +d.Count;
+        });
+
+        // data 규모 측정
+        x.domain(data.map(function(d) { return d.Group; }));
+        y.domain([0, d3.max(data, function(d) { return d.Count; })]);
+
+        // 축(axis) 그리기
+        svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height + ")")
+            .call(xAxis)
+            .selectAll("text")
+            .style("text-anchor", "end")
+            .attr("dx", "-.8em")
+            .attr("dy", "-.55em")
+            .attr("transform", "rotate(-90)" )
+
+        svg.append("g")
+            .attr("class", "y axis")
+            .call(yAxis)
+            .append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 5)
+            .attr("dy", ".71em")
+            .style("text-anchor", "end");
+
+        // bar chart 그리기
+        svg.selectAll("bar")
+            .data(data)
+            .enter().append("rect")
+            .attr("class", "bar")
+            .attr("x", function(d) { return x(d.Group); })
+            .attr("width", x.rangeBand())
+            .attr("y", function(d) { return y(d.Count); })
+            .attr("height", function(d) { return height - y(d.Count); })
+            .on('mouseover', tip.show)
+            .on('mouseout', tip.hide);
+
+        svg.append("text")
+            .attr("x", (width / 2))
+            .attr("y", 0 - (margin.top/2) + 6)
+            .attr("text-anchor", "middle")
+            .style("font-size", "25px")
+            .text("2018 지역 별 주민등록 인구");
+    });
+
+</script>
+
+</body>
